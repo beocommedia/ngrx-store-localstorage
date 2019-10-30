@@ -37,6 +37,12 @@ const validateStateKeys = (keys: any[]) => {
   });
 };
 
+const cookieStorageAdapter = {
+  getItem: key => Cookies.get(key),
+  setItem: (key, value) => Cookies.set(key, value, { domain: document.domain }),
+  removeItem: key => Cookies.remove(key, { domain: document.domain })
+};
+
 export const rehydrateApplicationState = (
   keys: any[],
   storage: Storage,
@@ -221,11 +227,7 @@ export const localStorageSync = (config: LocalStorageConfig) => (
     (config.storage === undefined && !config.checkStorageAvailability) ||
     (config.checkStorageAvailability && checkIsBrowserEnv())
   ) {
-    config.storage = {
-      getItem: Cookies.get,
-      setItem: Cookies.set,
-      removeItem: Cookies.remove
-    };
+    config.storage = cookieStorageAdapter;
   }
 
   if (config.storageKeySerializer === undefined) {
@@ -300,11 +302,7 @@ export const localStorageSyncAndClean = (
   let config: LocalStorageConfig = {
     keys: keys,
     rehydrate: rehydrate,
-    storage: {
-      getItem: Cookies.get,
-      setItem: Cookies.set,
-      removeItem: Cookies.remove
-    },
+    storage: cookieStorageAdapter,
     removeOnUndefined: removeOnUndefined
   };
 

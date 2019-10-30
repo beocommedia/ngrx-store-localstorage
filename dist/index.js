@@ -38,6 +38,11 @@ var validateStateKeys = function (keys) {
         return key;
     });
 };
+var cookieStorageAdapter = {
+    getItem: function (key) { return Cookies.get(key); },
+    setItem: function (key, value) { return Cookies.set(key, value, { domain: document.domain }); },
+    removeItem: function (key) { return Cookies.remove(key, { domain: document.domain }); }
+};
 exports.rehydrateApplicationState = function (keys, storage, storageKeySerializer, restoreDates) {
     return keys.reduce(function (acc, curr) {
         var _a;
@@ -188,11 +193,7 @@ exports.syncStateUpdate = function (state, keys, storage, storageKeySerializer, 
 exports.localStorageSync = function (config) { return function (reducer) {
     if ((config.storage === undefined && !config.checkStorageAvailability) ||
         (config.checkStorageAvailability && checkIsBrowserEnv())) {
-        config.storage = {
-            getItem: Cookies.get,
-            setItem: Cookies.set,
-            removeItem: Cookies.remove
-        };
+        config.storage = cookieStorageAdapter;
     }
     if (config.storageKeySerializer === undefined) {
         config.storageKeySerializer = function (key) { return key; };
@@ -245,11 +246,7 @@ exports.localStorageSyncAndClean = function (keys, rehydrate, removeOnUndefined)
         var config = {
             keys: keys,
             rehydrate: rehydrate,
-            storage: {
-                getItem: Cookies.get,
-                setItem: Cookies.set,
-                removeItem: Cookies.remove
-            },
+            storage: cookieStorageAdapter,
             removeOnUndefined: removeOnUndefined
         };
         return _this.localStorageSync(config);
