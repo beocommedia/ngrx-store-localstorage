@@ -6,7 +6,7 @@ export declare const localStorageSyncAndClean: (keys: any[], rehydrate?: boolean
 export interface LocalStorageConfig {
     keys: any[];
     rehydrate?: boolean;
-    storage?: Storage;
+    storage?: any;
     removeOnUndefined?: boolean;
     restoreDates?: boolean;
     storageKeySerializer?: (key: string) => string;
